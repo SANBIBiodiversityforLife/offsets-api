@@ -23,10 +23,10 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter(trailing_slash=False)
 router.register(r'developments', views.DevelopmentViewSet)
 router.register(r'permits', views.PermitViewSet)
-router.register(r'offset-implementation-times', views.OffsetImplementationTimeViewSet)
+router.register(r'implementation-times', views.ImplementationTimeViewSet)
 router.register(r'offsets', views.OffsetViewSet)
 router.register(r'geospatial-biodiversity/areas', geospatial_biodiversity_views.AreaViewSet)
-
+router.register(r'statistics', views.Statistics, base_name='statistics')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

@@ -23,39 +23,52 @@ class Development(models.Model):
     year = models.IntegerField(help_text="The year in which the development was completed.")
     permits = models.ManyToManyField(Permit, help_text="May be one of several, linked to the Permit model.")
 
+    AGRICULTURE = 'AG'
+    BUSINESS = 'BU'
+    COMMERCIAL = 'CO'
+    GOVERNMENT = 'GO'
+    GOVERNMENT_PURPOSES = 'GP'
+    INDUSTRIAL = 'IN'
+    MINING = 'MI'
+    MULTI_USE = 'MU'
+    RECREATIONAL = 'RC'
+    RESIDENTIAL = 'RE'
+    TRANSPORT = 'TR'
+    UNKNOWN = 'UN'
     TYPE_CHOICES = (
-        ('AG', 'Agriculture'),
-        ('BU', 'Business'),
-        ('GO', 'Government'),
-        ('GP', 'Government purposes'),
-        ('IN', 'Industrial'),
-        ('MI', 'Mining'),
-        ('MU', 'Multi-use (public, residential, commercial)'),
-        ('RC', 'Recreational'),
-        ('RE', 'Residential'),
-        ('TR', 'Transport'),
-        ('UN', 'Unknown'),
+        (AGRICULTURE, 'Agriculture'),
+        (BUSINESS, 'Business'),
+        (COMMERCIAL, 'Commercial'),
+        (GOVERNMENT, 'Government'),
+        (GOVERNMENT_PURPOSES, 'Government purposes'),
+        (INDUSTRIAL, 'Industrial'),
+        (MINING, 'Mining'),
+        (MULTI_USE, 'Multi-use (public, residential, commercial)'),
+        (RECREATIONAL, 'Recreational'),
+        (RESIDENTIAL, 'Residential'),
+        (TRANSPORT, 'Transport'),
+        (UNKNOWN, 'Unknown'),
     )
-    type = models.CharField(max_length=2, choices=TYPE_CHOICES, help_text="Choose the one which fits best.")
+    type = models.CharField(max_length=2, choices=TYPE_CHOICES, help_text="Choose all types of development that form part of the application.")
 
     footprint = models.PolygonField(help_text="Should be a .geojson file.")
 
+    geo_info = JSONField()
     info = JSONField()
 
-    def save(self, *args, **kwargs):
-        province = polygon_models.Area.objects.filter(type=polygon_models.Area.PROVINCE,
-                                                      polygon__contains=self.footprint).first()
-        #info = {'province': province,
-        #        }
-        geo_info = services.get_area_info(self.footprint)
-        import pdb; pdb.set_trace()
-
-        super(Development, self).save(*args, **kwargs)
+    def get_info_fields(self):
+        return ['applicant', 'application_title', 'activity_description', 'authority', 'case_officer', 'date_issued',
+                'environmental_consultancy', 'environmental_assessment_practitioner', 'location', 'reference_no']
 
     def province(self):
         province = polygon_models.Area.objects.filter(type=polygon_models.Area.PROVINCE, polygon__contains=self.footprint).first()
         return str(province)
 
+    def __str__(self):
+        name = str(self.year) + ' ' + self.get_type_display()
+        if 'province' in self.geo_info:
+            name += ' ' + self.geo_info['province']
+        return name
 
 class OffsetImplementationTime(models.Model):
     """
@@ -63,11 +76,14 @@ class OffsetImplementationTime(models.Model):
     Before development, During development, After development - 6 months, After development - 12 months,
     After development - 24 months, After development - more than 24 months
     """
-    time = models.CharField(max_length=50)
+    name = models.CharField(max_length=50)
 
     def is_staggered(self):
         """If there's more than one implementation time, the implementation is considered to be 'staggered'."""
         return False
+
+    def __str__(self):
+        return self.name
 
 
 class Offset(models.Model):
@@ -78,7 +94,7 @@ class Offset(models.Model):
     If an offset is of type hectares it should have an associated polygon.
     """
     development = models.ForeignKey(Development)
-    polygon = models.PolygonField(null=True, blank=True)  # This is rather messy, perhaps there's a better way to do it?
+    polygon = models.PolygonField(null=True, blank=True)  # TODO change to multipolygon
 
     HECTARES = 'HE'
     RESEARCH = 'RE'
@@ -92,14 +108,21 @@ class Offset(models.Model):
     )
     type = models.CharField(max_length=2, choices=TYPE_CHOICES, null=True, blank=True)
 
+    PERPETUITY = 'PE'
+    UNSPECIFIED = 'US'
+    UNKNOWN = 'UN'
+    LOWER = 'LT'
+    MIDRANGE = 'TF'
+    LONG = 'HC'
     DURATION_CHOICES = (
-        ('PE', 'Perpetuity'),
-        ('US', 'Unspecified'),
-        ('UN', 'Unknown'),
-        ('LT', '< 20 years'),
-        ('TF', 'Between 20 and 50 years'),
-        ('HC', '> 50 years'),
+        (PERPETUITY, 'Perpetuity'),
+        (UNSPECIFIED, 'Unspecified'),
+        (UNKNOWN, 'Unknown'),
+        (LOWER, '< 20 years'),
+        (MIDRANGE, 'Between 20 and 50 years'),
+        (LONG, '> 50 years'),
     )
     duration = models.CharField(max_length=2, choices=DURATION_CHOICES)
 
+    info = JSONField()
     implementation_times = models.ManyToManyField(OffsetImplementationTime)

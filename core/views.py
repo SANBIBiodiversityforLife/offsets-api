@@ -1,6 +1,9 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.decorators import detail_route
 from core import models
+from django.db.models import Count
 from core import serializers
 
 
@@ -23,17 +26,77 @@ class PermitViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PermitSerializer
 
 
-class OffsetImplementationTimeViewSet(viewsets.ModelViewSet):
+class ImplementationTimeViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
     """
     queryset = models.OffsetImplementationTime.objects.all()
-    serializer_class = serializers.OffsetImplementationTimeSerializer
+    serializer_class = serializers.ImplementationTimeSerializer
 
 
 class OffsetViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
     """
+    metadata_class = serializers.GeoMetadata
     queryset = models.Offset.objects.all()
     serializer_class = serializers.OffsetSerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned offsets to a given development
+        """
+        queryset = models.Offset.objects.filter(type=models.Offset.HECTARES)
+        development = self.request.query_params.get('development', None)
+        if development is not None:
+            queryset = queryset.filter(development__id=development)
+        return queryset
+
+
+class Statistics(viewsets.ViewSet):
+    """
+    View to get some statistics from the database
+    """
+    def list(self, request, format=None):
+        """
+        Return the number of developments each authority has issued
+        """
+        permits = []
+        for permit in models.Permit.objects.all():
+            development_count = models.Development.objects.filter(permits=permit).count()
+            permits.append({'label': permit.name, 'value': development_count})
+
+        years = models.Development.objects.all().values('year').annotate(total=Count('year')).order_by('total')
+        returned_years = []
+        for year in years:
+            returned_years.append({'label': year['year'], 'value': year['total']})
+
+        veg_types_dev = models.Development.objects.all().values('info')
+        all_vg = {}
+        for vgd in veg_types_dev:
+            vgd = vgd['info']
+            for key, item in vgd.items():
+                if key in all_vg:
+                    all_vg[key] += 1
+                else:
+                    all_vg[key] = 1
+        #all_vg = sorted(all_vg)
+        returned_vg = []
+
+        for key, item in all_vg.items():
+            returned_vg.append({'label': key, 'value': item})
+
+
+        response = {'Number of developments per permit': {'data': sorted(permits, key=lambda k: k['label']),
+                                                          'x_axis': 'Permits',
+                                                          'y_axis': 'Number of developments',
+                                                          'wide_graph': False},
+                    'Number of developments per year': {'data': sorted(returned_years, key=lambda k: k['label']),
+                                                        'x_axis': 'Years',
+                                                        'y_axis': 'Number of developments',
+                                                        'wide_graph': False},
+                    'Number of vegetation types (developments)': {'data': sorted(returned_vg, key=lambda k: k['label']),
+                                                                  'x_axis': 'Vegetation types',
+                                                                  'y_axis': 'Number of developments',
+                                                                  'wide_graph': True}}
+        return Response(response)
