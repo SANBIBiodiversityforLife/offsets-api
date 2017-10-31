@@ -16,16 +16,15 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from core import views
-from geospatialbiodiversity import views as geospatial_biodiversity_views
 from rest_framework.routers import DefaultRouter
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter(trailing_slash=False)
 router.register(r'developments', views.DevelopmentViewSet)
+router.register(r'permit-names', views.PermitNameViewSet)
 router.register(r'permits', views.PermitViewSet)
 router.register(r'implementation-times', views.ImplementationTimeViewSet)
 router.register(r'offsets', views.OffsetViewSet)
-router.register(r'geospatial-biodiversity/areas', geospatial_biodiversity_views.AreaViewSet)
 router.register(r'statistics', views.Statistics, base_name='statistics')
 
 urlpatterns = [

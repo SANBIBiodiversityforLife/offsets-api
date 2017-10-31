@@ -10,10 +10,16 @@ from rest_framework.utils.field_mapping import ClassLookupDict
 from rest_framework_gis.fields import GeometryField
 
 
+class PermitNameSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.PermitName
+        fields = ('id', 'url', 'name', 'authority')
+
+
 class PermitSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Permit
-        fields = ('id', 'name', 'url')
+        fields = ('id', 'url', 'permit_name','development', 'area_hectares', 'date_issued', 'reference_no')
 
 
 class GeoMetadata(SimpleMetadata):
@@ -69,17 +75,31 @@ class GeoMetadata(SimpleMetadata):
         return field_info
 
 
-class DevelopmentSerializer(GeoFeatureModelSerializer):
+class DevelopmentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Development
+        fields = ('id', 'url', 'permits', 'use', 'get_use_display', 'applicant', 'application_title',
+                  'activity_description', 'case_officer', 'environmental_consultancy',
+                  'environmental_assessment_practitioner', 'location_description', 'unique_id', '__str__',
+                  'geo_info')
+    #footprint = models.PolygonField(help_text="Should be a .geojson file.")
+
+
+class DevelopmentGeoSerializer(GeoFeatureModelSerializer):
     #permits = serializers.PrimaryKeyRelatedField(many=True)
-    info = serializers.JSONField()
+    # info = serializers.JSONField()
     #permits = serializers.StringRelatedField(many=True)
     #permits = PermitSerializer(many=True)
     #permits = serializers.StringRelatedField(many=True)
+    geo_info = serializers.JSONField()
 
     class Meta:
         model = models.Development
         geo_field = 'footprint'
-        fields = ('id', 'year', 'permits', 'type', 'url', 'info', 'get_type_display')
+        fields = ('id', 'url', 'permits', 'use', 'get_use_display', 'applicant', 'application_title',
+                  'activity_description', 'case_officer', 'environmental_consultancy',
+                  'environmental_assessment_practitioner', 'location_description', 'unique_id', '__str__',
+                  'geo_info')
 
 
 class ImplementationTimeSerializer(serializers.HyperlinkedModelSerializer):

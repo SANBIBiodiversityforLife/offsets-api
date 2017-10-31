@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'rest_framework_gis',
     'core',
     'corsheaders',
-    'geospatialbiodiversity'
 ]
 
 MIDDLEWARE = [
@@ -152,7 +151,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.TemplateHTMLRenderer',
     ),
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': 50,
     'DATE_FORMAT': '%d %b %Y'
 }
 

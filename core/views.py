@@ -8,13 +8,12 @@ from core import serializers
 
 
 class DevelopmentViewSet(viewsets.ModelViewSet):
-
     """
     This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
     """
     metadata_class = serializers.GeoMetadata
     queryset = models.Development.objects.all()
-    serializer_class = serializers.DevelopmentSerializer
+    serializer_class = serializers.DevelopmentGeoSerializer
 
 
 class PermitViewSet(viewsets.ModelViewSet):
@@ -24,6 +23,15 @@ class PermitViewSet(viewsets.ModelViewSet):
     metadata_class = serializers.GeoMetadata
     queryset = models.Permit.objects.all()
     serializer_class = serializers.PermitSerializer
+
+
+class PermitNameViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+    """
+    metadata_class = serializers.GeoMetadata
+    queryset = models.PermitName.objects.all()
+    serializer_class = serializers.PermitNameSerializer
 
 
 class ImplementationTimeViewSet(viewsets.ModelViewSet):
@@ -66,15 +74,15 @@ class Statistics(viewsets.ViewSet):
             development_count = models.Development.objects.filter(permits=permit).count()
             permits.append({'label': permit.name, 'value': development_count})
 
-        years = models.Development.objects.all().values('year').annotate(total=Count('year')).order_by('total')
+        years = models.Development.objects.all().values('date_issued').annotate(total=Count('date_issued')).order_by('total')
         returned_years = []
         for year in years:
-            returned_years.append({'label': year['year'], 'value': year['total']})
+            returned_years.append({'label': year['date_issued'], 'value': year['total']})
 
-        veg_types_dev = models.Development.objects.all().values('info')
+        veg_types_dev = models.Development.objects.all().values('geo_info')
         all_vg = {}
         for vgd in veg_types_dev:
-            vgd = vgd['info']
+            vgd = vgd['geo_info']
             for key, item in vgd.items():
                 if key in all_vg:
                     all_vg[key] += 1
