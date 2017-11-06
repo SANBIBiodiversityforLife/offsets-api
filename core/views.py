@@ -13,6 +13,15 @@ class DevelopmentViewSet(viewsets.ModelViewSet):
     """
     metadata_class = serializers.GeoMetadata
     queryset = models.Development.objects.all()
+    serializer_class = serializers.DevelopmentSerializer
+
+
+class DevelopmentGeoViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+    """
+    metadata_class = serializers.GeoMetadata
+    queryset = models.Development.objects.all()
     serializer_class = serializers.DevelopmentGeoSerializer
 
 
@@ -67,14 +76,14 @@ class Statistics(viewsets.ViewSet):
     """
     def list(self, request, format=None):
         """
-        Return the number of developments each authority has issued
+        Return the number of permits each authority has issued
         """
         permits = []
         for permit in models.Permit.objects.all():
             development_count = models.Development.objects.filter(permits=permit).count()
             permits.append({'label': permit.name, 'value': development_count})
 
-        years = models.Development.objects.all().values('date_issued').annotate(total=Count('date_issued')).order_by('total')
+        years = models.Permit.objects.all().values('date_issued').annotate(total=Count('date_issued')).order_by('total')
         returned_years = []
         for year in years:
             returned_years.append({'label': year['date_issued'], 'value': year['total']})
@@ -88,7 +97,7 @@ class Statistics(viewsets.ViewSet):
                     all_vg[key] += 1
                 else:
                     all_vg[key] = 1
-        #all_vg = sorted(all_vg)
+        # all_vg = sorted(all_vg)
         returned_vg = []
 
         for key, item in all_vg.items():
@@ -99,7 +108,7 @@ class Statistics(viewsets.ViewSet):
                                                           'x_axis': 'Permits',
                                                           'y_axis': 'Number of developments',
                                                           'wide_graph': False},
-                    'Number of developments per year': {'data': sorted(returned_years, key=lambda k: k['label']),
+                    'Number of permits per year': {'data': sorted(returned_years, key=lambda k: k['label']),
                                                         'x_axis': 'Years',
                                                         'y_axis': 'Number of developments',
                                                         'wide_graph': False},

@@ -10,8 +10,8 @@ class PermitName(models.Model):
     Other egs: 'Environmental Impact Assessment', 'Department of Agriculture, Forestry and Fisheries Permit',
     'Water Use License Application', 'Department of Mineral Resources'
     """
-    name = models.CharField(max_length=100, help_text="E.g. Department of Water Affairs.")
-    authority = models.CharField(max_length=100, help_text="E.g. Water Use License (WULA).")
+    name = models.CharField(max_length=100, help_text="Name of the permit - e.g. Water Use License (WULA).")
+    authority = models.CharField(max_length=100, help_text="Name of the authority who issues the permit - e.g. Department of Water Affairs.")
 
     def __str__(self):
         return self.name
@@ -89,7 +89,7 @@ class Permit(models.Model):
 
 class OffsetImplementationTime(models.Model):
     """
-    The offsets required by a development can be implemented over multiple time frames, such as:
+    The offsets required by a development can be implemented over multiple time frames:
     Before development, During development, After development - 6 months, After development - 12 months,
     After development - 24 months, After development - more than 24 months
     """

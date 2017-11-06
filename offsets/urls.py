@@ -20,6 +20,7 @@ from rest_framework.routers import DefaultRouter
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter(trailing_slash=False)
+router.register(r'developments-geo', views.DevelopmentGeoViewSet)
 router.register(r'developments', views.DevelopmentViewSet)
 router.register(r'permit-names', views.PermitNameViewSet)
 router.register(r'permits', views.PermitViewSet)
