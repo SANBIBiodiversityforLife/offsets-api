@@ -55,7 +55,7 @@ class Development(models.Model):
     )
     use = models.CharField(max_length=2, choices=TYPE_CHOICES, help_text="Choose all types of development that form part of the application.")
 
-    footprint = models.PolygonField(help_text="Should be a .geojson file.")
+    footprint = models.MultiPolygonField(help_text="Should be a .geojson file.")
 
     geo_info = JSONField() # What the heck is this??
 
@@ -111,7 +111,7 @@ class Offset(models.Model):
     If an offset is of type hectares it should have an associated polygon.
     """
     development = models.ForeignKey(Development)
-    polygon = models.PolygonField(null=True, blank=True)  # TODO change to multipolygon
+    polygon = models.MultiPolygonField(null=True, blank=True)
 
     HECTARES = 'HE'
     RESEARCH = 'RE'
