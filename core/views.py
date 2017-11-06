@@ -51,6 +51,25 @@ class ImplementationTimeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ImplementationTimeSerializer
 
 
+class OffsetGeoViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+    """
+    metadata_class = serializers.GeoMetadata
+    queryset = models.Offset.objects.all()
+    serializer_class = serializers.OffsetGeoSerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned offsets to a given development
+        """
+        queryset = models.Offset.objects.filter(type=models.Offset.HECTARES)
+        development = self.request.query_params.get('development', None)
+        if development is not None:
+            queryset = queryset.filter(development__id=development)
+        return queryset
+
+
 class OffsetViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.

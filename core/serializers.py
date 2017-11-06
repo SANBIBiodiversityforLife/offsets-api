@@ -108,10 +108,18 @@ class ImplementationTimeSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'name', 'url')
 
 
-class OffsetSerializer(GeoFeatureModelSerializer):
+class OffsetGeoSerializer(GeoFeatureModelSerializer):
     info = serializers.JSONField()
 
     class Meta:
         model = models.Offset
         geo_field = 'polygon'
-        fields = ('id', 'development', 'type', 'get_type_display', 'duration', 'implementation_times', 'url', 'info')
+        fields = ('id', 'url', 'development', 'type', 'get_type_display', 'duration', 'implementation_times', 'info')
+
+
+class OffsetSerializer(serializers.HyperlinkedModelSerializer):
+    info = serializers.JSONField()
+
+    class Meta:
+        model = models.Offset
+        fields = ('id', 'url', 'development', 'type', 'get_type_display', 'duration', 'implementation_times', 'info')
