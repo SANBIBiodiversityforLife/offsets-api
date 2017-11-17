@@ -19,7 +19,7 @@ class PermitNameSerializer(serializers.HyperlinkedModelSerializer):
 class PermitSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Permit
-        fields = ('id', 'url', 'permit_name','development', 'area_hectares', 'date_issued', 'reference_no')
+        fields = ('id', 'url', 'permit_name','development', 'case_officer', 'area_hectares', 'date_issued', 'reference_no')
 
 
 class GeoMetadata(SimpleMetadata):
@@ -79,7 +79,7 @@ class DevelopmentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Development
         fields = ('id', 'url', 'permits', 'use', 'get_use_display', 'applicant', 'application_title',
-                  'activity_description', 'case_officer', 'environmental_consultancy',
+                  'activity_description', 'environmental_consultancy',
                   'environmental_assessment_practitioner', 'location_description', 'unique_id', '__str__',
                   'geo_info')
     #footprint = models.PolygonField(help_text="Should be a .geojson file.")
