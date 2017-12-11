@@ -97,7 +97,7 @@ class DevelopmentGeoSerializer(GeoFeatureModelSerializer):
         model = models.Development
         geo_field = 'footprint'
         fields = ('id', 'url', 'permits', 'use', 'get_use_display', 'applicant', 'application_title',
-                  'activity_description', 'case_officer', 'environmental_consultancy',
+                  'activity_description', 'environmental_consultancy',
                   'environmental_assessment_practitioner', 'location_description', 'unique_id', '__str__',
                   'geo_info')
 
