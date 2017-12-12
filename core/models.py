@@ -152,3 +152,24 @@ class Offset(models.Model):
 
     info = JSONField()
     implementation_times = models.ManyToManyField(OffsetImplementationTime)
+
+
+
+class OffsetTriggers(models.Model):
+    ECOSYSTEM = 'E'
+    THREATENED_SP = 'TSP'
+    TYPE_OF_TRIGGER_CHOICES = (
+        (ECOSYSTEM, 'Ecosystem'),
+        (THREATENED_SP, 'Threatened or protected species')
+    )
+    type_of_trigger = models.CharField(max_length=1, choices=TYPE_OF_TRIGGER_CHOICES)
+    name = models.CharField(max_length=200, null=True, blank=True, help_text="The name of the ecosystem or protected species.")
+
+    # Optional fields sometimes not displayed (only for ecosystems)
+    size = models.IntegerField(null=True, blank=True, help_text="This is the actual amount of space the development is taking up of this ecosystem.")
+    required_offset_size = models.IntegerField(null=True, blank=True, help_text="The condition of the authorisation, specified in hectares.")
+
+
+
+
+
