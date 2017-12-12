@@ -62,6 +62,8 @@ class Development(models.Model):
 
     code = models.CharField(max_length=200, null=True, blank=True, help_text="This is SANBI's ID number for this development.")
 
+    start_date = models.DateField(null=True, blank=True)
+
     def __str__(self):
         name = self.application_title
         #if 'province' in self.geo_info:
@@ -78,7 +80,6 @@ class Permit(models.Model):
     reference_no = models.CharField(max_length=200, null=True, blank=True, help_text="The reference number for the permit.")
     date_issued = models.DateField(null=True, blank=True, help_text="The date this permit was issued.")
 
-    area_hectares = models.IntegerField(null=True, blank=True, help_text="The area in hectares associated with this permit.")
     case_officer = models.CharField(max_length=100, null=True, blank=True, help_text="The name of the case officer dealing with the permit.")
     application_title = models.CharField(max_length=500, null=True, blank=True, help_text="Should describe what the development is, e.g. 'Establishment of the Northern Golf Course Estate, Johannesburg Gauteng'.")
     activity_description = models.TextField(null=True, blank=True, help_text="Provides more detail on what the development will entail, e.g. 'The development proposal will comprise of the following: Residential, internal roads, and access control.'")
@@ -165,8 +166,8 @@ class OffsetTrigger(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True, help_text="The name of the ecosystem or protected species.")
 
     # Optional fields sometimes not displayed (only for ecosystems)
-    size = models.IntegerField(null=True, blank=True, help_text="This is the actual amount of space the development is taking up of this ecosystem.")
-    required_offset_size = models.IntegerField(null=True, blank=True, help_text="The condition of the authorisation, specified in hectares.")
+    size = models.IntegerField(null=True, blank=True, help_text="This is the area in hectares relevant to this trigger (e.g. 20 ha of pristine renosterveld will be destroyed).")
+    required_offset_size = models.IntegerField(null=True, blank=True, help_text="The condition of the authorisation, specified in hectares (e.g. conserve 40 ha of pristine renosterveld in compensation)")
 
     MET = 'ME'
     NOT_MET_LAPSED = 'LA'
