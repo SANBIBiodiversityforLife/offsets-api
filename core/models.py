@@ -25,8 +25,6 @@ class Development(models.Model):
     Developments are buildings or groups of buildings/constructions which are undertaken somewhere in South Africa.
     The permits are already obtained and the building is completed.
     """
-    permits = models.ManyToManyField(PermitName, through='Permit', help_text="May be one of several, linked to the Permit model. Do not select any options if there is no information about the permit.")
-
     AGRICULTURE = 'AG'
     BUSINESS = 'BU'
     COMMERCIAL = 'CO'
@@ -56,17 +54,13 @@ class Development(models.Model):
     use = models.CharField(max_length=2, choices=TYPE_CHOICES, help_text="Choose all types of development that form part of the application.")
 
     footprint = models.MultiPolygonField(help_text="Should be a .geojson file.", null=True, blank=True)
-
+    location_description = models.TextField(null=True, blank=True, help_text="A description of the locality of the development.")
     geo_info = JSONField(null=True, blank=True) # What the heck is this??
 
     # Info from the data capture sheets. I don't know how much of this is going to get used, possibly it should just be stored in json.
-    applicant = models.CharField(max_length=100, null=True, blank=True, help_text="The name of the development company who applied for the permit?")
-    application_title = models.CharField(max_length=500, null=True, blank=True, help_text="Should describe what the development is, e.g. 'Establishment of the Northern Golf Course Estate, Johannesburg Gauteng'.")
-    activity_description = models.TextField(null=True, blank=True, help_text="Provides more detail on what the development will entail, e.g. 'The development proposal will comprise of the following: Residential, internal roads, and access control.'")
-    environmental_consultancy = models.CharField(max_length=100, null=True, blank=True, help_text="The name of the consultancy who performed the EIA")
-    environmental_assessment_practitioner = models.CharField(max_length=100, null=True, blank=True, help_text="The name of the staff member in the above consultancy.")
-    location_description = models.TextField(null=True, blank=True, help_text="A description of the locality of the development.")
-    unique_id = models.CharField(max_length=200, null=True, blank=True, help_text="This is SANBI's ID number for this development.")
+    developer= models.CharField(max_length=100, null=True, blank=True, help_text="The name of the development company who applied for the permit?")
+
+    code = models.CharField(max_length=200, null=True, blank=True, help_text="This is SANBI's ID number for this development.")
 
     def __str__(self):
         name = self.application_title
@@ -81,11 +75,25 @@ class Permit(models.Model):
     """
     permit_name = models.ForeignKey(PermitName, on_delete=models.CASCADE)
     development = models.ForeignKey(Development, on_delete=models.CASCADE)
-    area_hectares = models.IntegerField(null=True, blank=True, help_text="The area in hectares associated with this permit.")
-    date_issued = models.DateField(null=True, blank=True, help_text="The date this permit was issued.")
     reference_no = models.CharField(max_length=200, null=True, blank=True, help_text="The reference number for the permit.")
-    case_officer = models.CharField(max_length=100, null=True, blank=True,
-                                    help_text="The name of the case officer dealing with the permit.")
+    date_issued = models.DateField(null=True, blank=True, help_text="The date this permit was issued.")
+
+    area_hectares = models.IntegerField(null=True, blank=True, help_text="The area in hectares associated with this permit.")
+    case_officer = models.CharField(max_length=100, null=True, blank=True, help_text="The name of the case officer dealing with the permit.")
+    application_title = models.CharField(max_length=500, null=True, blank=True, help_text="Should describe what the development is, e.g. 'Establishment of the Northern Golf Course Estate, Johannesburg Gauteng'.")
+    activity_description = models.TextField(null=True, blank=True, help_text="Provides more detail on what the development will entail, e.g. 'The development proposal will comprise of the following: Residential, internal roads, and access control.'")
+    environmental_consultancy = models.CharField(max_length=100, null=True, blank=True, help_text="The name of the consultancy who performed the EIA")
+    environmental_assessment_practitioner = models.CharField(max_length=100, null=True, blank=True, help_text="The name of the staff member in the above consultancy.")
+
+    OFFSET_REQUIREMENT_STIPULATED = 'Y'
+    OFFSET_REQUIREMENT_NOT_DETERMINED = 'D'
+    OFFSET_REQUIREMENT_NOT_PUBLICISED = 'P'
+    OFFSET_REQUIREMENT_STIPULATED_CHOICES = (
+        (OFFSET_REQUIREMENT_STIPULATED, 'Yes'),
+        (OFFSET_REQUIREMENT_NOT_DETERMINED, 'No, the offset hasn\'t been determined'),
+        (OFFSET_REQUIREMENT_NOT_PUBLICISED, 'No, not publicised')
+    )
+    offset_requirement_stipulated = models.CharField(max_length=2, choices=OFFSET_REQUIREMENT_STIPULATED_CHOICES, help_text="Choose all types of development that form part of the application.")
 
 
 class OffsetImplementationTime(models.Model):
