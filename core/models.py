@@ -119,7 +119,7 @@ class Offset(models.Model):
     periods, lasting for different durations.
     If an offset is of type hectares it should have an associated polygon.
     """
-    development = models.ForeignKey(Development)
+    permit = models.ForeignKey(Permit, null=True, blank=True,)
     polygon = models.MultiPolygonField(null=True, blank=True)
 
     HECTARES = 'HE'
@@ -154,10 +154,9 @@ class Offset(models.Model):
     implementation_times = models.ManyToManyField(OffsetImplementationTime)
 
 
-
-class OffsetTriggers(models.Model):
+class OffsetTrigger(models.Model):
     ECOSYSTEM = 'E'
-    THREATENED_SP = 'TSP'
+    THREATENED_SP = 'T'
     TYPE_OF_TRIGGER_CHOICES = (
         (ECOSYSTEM, 'Ecosystem'),
         (THREATENED_SP, 'Threatened or protected species')
@@ -169,7 +168,17 @@ class OffsetTriggers(models.Model):
     size = models.IntegerField(null=True, blank=True, help_text="This is the actual amount of space the development is taking up of this ecosystem.")
     required_offset_size = models.IntegerField(null=True, blank=True, help_text="The condition of the authorisation, specified in hectares.")
 
-
+    MET = 'ME'
+    NOT_MET_LAPSED = 'LA'
+    NOT_MET_IN_PROGRESS = 'IP'
+    NOT_MET_UNKNOWN = 'NU'
+    OFFSET_MET_CHOICES = (
+        (MET, 'Yes, this offset has been met'),
+        (NOT_MET_LAPSED, 'No, this offset has not been met and the time has lapsed, it is outstanding.'),
+        (NOT_MET_IN_PROGRESS, 'No, this offset has not yet been met but the development is still in progress.'),
+        (NOT_MET_UNKNOWN, 'No, this offset has not been met for reasons unknown.'),
+    )
+    offset_met = models.CharField(max_length=1, choices=OFFSET_MET_CHOICES, null=True, blank=True,)
 
 
 

@@ -16,6 +16,12 @@ class PermitNameSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'url', 'name', 'authority')
 
 
+class OffsetTriggerSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.OffsetTrigger
+        fields = ('id', 'url', 'type_of_trigger','name', 'size', 'required_offset_size', 'offset_met')
+
+
 class PermitSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Permit

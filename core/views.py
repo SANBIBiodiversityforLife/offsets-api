@@ -25,6 +25,15 @@ class DevelopmentGeoViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.DevelopmentGeoSerializer
 
 
+class OffsetTriggerViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+    """
+    metadata_class = serializers.GeoMetadata
+    queryset = models.OffsetTrigger.objects.all()
+    serializer_class = serializers.OffsetTriggerSerializer
+
+
 class PermitViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
