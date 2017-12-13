@@ -84,28 +84,16 @@ class GeoMetadata(SimpleMetadata):
 class DevelopmentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Development
-        fields = ('id', 'url', 'permits', 'use', 'get_use_display', 'applicant', 'application_title',
-                  'activity_description', 'environmental_consultancy',
-                  'environmental_assessment_practitioner', 'location_description', 'unique_id', '__str__',
-                  'geo_info')
-    #footprint = models.PolygonField(help_text="Should be a .geojson file.")
+        fields = ('id', 'url',  'use', 'get_use_display', 'location_description', 'code')
 
 
 class DevelopmentGeoSerializer(GeoFeatureModelSerializer):
-    #permits = serializers.PrimaryKeyRelatedField(many=True)
-    # info = serializers.JSONField()
-    #permits = serializers.StringRelatedField(many=True)
-    #permits = PermitSerializer(many=True)
-    #permits = serializers.StringRelatedField(many=True)
-    geo_info = serializers.JSONField()
+    #geo_info = serializers.JSONField()
 
     class Meta:
         model = models.Development
         geo_field = 'footprint'
-        fields = ('id', 'url', 'permits', 'use', 'get_use_display', 'applicant', 'application_title',
-                  'activity_description', 'environmental_consultancy',
-                  'environmental_assessment_practitioner', 'location_description', 'unique_id', '__str__',
-                  'geo_info')
+        fields = ('id', 'url',  'use', 'get_use_display', 'location_description', 'code')
 
 
 class ImplementationTimeSerializer(serializers.HyperlinkedModelSerializer):

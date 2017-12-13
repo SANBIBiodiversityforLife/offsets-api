@@ -55,20 +55,12 @@ class Development(models.Model):
 
     footprint = models.MultiPolygonField(help_text="Should be a .geojson file.", null=True, blank=True)
     location_description = models.TextField(null=True, blank=True, help_text="A description of the locality of the development.")
-    geo_info = JSONField(null=True, blank=True) # What the heck is this??
-
-    # Info from the data capture sheets. I don't know how much of this is going to get used, possibly it should just be stored in json.
     developer= models.CharField(max_length=100, null=True, blank=True, help_text="The name of the development company who applied for the permit?")
-
-    code = models.CharField(max_length=200, null=True, blank=True, help_text="This is SANBI's ID number for this development.")
-
-    start_date = models.DateField(null=True, blank=True)
+    code = models.CharField(max_length=200, null=True, blank=True, help_text="This is SANBI's ID code for this development.")
+    start_date = models.DateField(null=True, blank=True, help_text="The day on which development is due to start.")
 
     def __str__(self):
-        name = self.application_title
-        #if 'province' in self.geo_info:
-        #    name += ' ' + self.geo_info['province']
-        return self.unique_id
+        return self.code
 
 
 class Permit(models.Model):
@@ -115,13 +107,13 @@ class OffsetImplementationTime(models.Model):
 
 class Offset(models.Model):
     """
-    Developments might occur on a sensitive piece of land - e.g. a protected area. In which case, the development
-    should be associated with one or several offsets. There are different types of offsets implemented over different
-    periods, lasting for different durations.
+    If a permit has OffsetTriggers, a development should ideally have offsets. These are mitigation/compensation
+    actions which the developer performs in order to "make up" for destroying habitat/endangered ecosystems/etc.
+    Offsets can take the form of research, rehabilitation work, financial compensation or buying up and protecting
+    some land (hectare type).
     If an offset is of type hectares it should have an associated polygon.
     """
     permit = models.ForeignKey(Permit, null=True, blank=True,)
-    polygon = models.MultiPolygonField(null=True, blank=True)
 
     HECTARES = 'HE'
     RESEARCH = 'RE'
@@ -135,6 +127,7 @@ class Offset(models.Model):
     )
     type = models.CharField(max_length=2, choices=TYPE_CHOICES, null=True, blank=True)
 
+    polygon = models.MultiPolygonField(null=True, blank=True)
     PERPETUITY = 'PE'
     UNSPECIFIED = 'US'
     UNKNOWN = 'UN'
@@ -156,11 +149,20 @@ class Offset(models.Model):
 
 
 class OffsetTrigger(models.Model):
+    """
+    When a permit or authorisation is issued to a development, there might be several different types of things special
+    to the area the development is occurring on (e.g. threatened/protected species might live there, there might be
+    endangered ecosystems that will be destroyed, etc). These special things are "triggers" for offsets - in other words
+    the conditions (usually that the company has to create an offset) of the permit being issued is based upon these
+    triggers.
+    """
+    permit = models.ForeignKey(Permit, null=True, blank=True)
+
     ECOSYSTEM = 'E'
     THREATENED_SP = 'T'
     TYPE_OF_TRIGGER_CHOICES = (
         (ECOSYSTEM, 'Ecosystem'),
-        (THREATENED_SP, 'Threatened or protected species')
+        (THREATENED_SP, 'Threatened or protected species populations/individuals')
     )
     type_of_trigger = models.CharField(max_length=1, choices=TYPE_OF_TRIGGER_CHOICES)
     name = models.CharField(max_length=200, null=True, blank=True, help_text="The name of the ecosystem or protected species.")
