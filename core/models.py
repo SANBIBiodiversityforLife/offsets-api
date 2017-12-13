@@ -107,13 +107,12 @@ class OffsetImplementationTime(models.Model):
 
 class Offset(models.Model):
     """
-    If a permit has OffsetTriggers, a development should ideally have offsets. These are mitigation/compensation
-    actions which the developer performs in order to "make up" for destroying habitat/endangered ecosystems/etc.
-    Offsets can take the form of research, rehabilitation work, financial compensation or buying up and protecting
-    some land (hectare type).
-    If an offset is of type hectares it should have an associated polygon.
+    Permits are generally issued to developers with certain requirements or stipulations to get them to "compensate"
+    for the biodiversity they have lost. This table records what these stipulations were, and whether they were met
+    or not. If we can't work out what the stipulations are for a permit then it does not have an entry in this table.
     """
-    permit = models.ForeignKey(Permit, null=True, blank=True,)
+    permit = models.ForeignKey(Permit, help_text="The permit this offset belongs to.")
+    implementation_times = models.ManyToManyField(OffsetImplementationTime, help_text="When this offset was supposed to be implemented. ") # Honestly this is a bit of a useless field.
 
     HECTARES = 'HE'
     RESEARCH = 'RE'
@@ -125,7 +124,7 @@ class Offset(models.Model):
         (REHAB, 'Rehabilitation'),
         (FINANCIAL, 'Financial compensation')
     )
-    type = models.CharField(max_length=2, choices=TYPE_CHOICES, null=True, blank=True)
+    type = models.CharField(max_length=2, choices=TYPE_CHOICES, null=True, blank=True, help_text="The type of offset.")
 
     polygon = models.MultiPolygonField(null=True, blank=True)
     PERPETUITY = 'PE'
@@ -142,46 +141,41 @@ class Offset(models.Model):
         (MIDRANGE, 'Between 20 and 50 years'),
         (LONG, '> 50 years'),
     )
-    duration = models.CharField(max_length=2, choices=DURATION_CHOICES)
-
-    info = JSONField()
-    implementation_times = models.ManyToManyField(OffsetImplementationTime)
-
-
-class OffsetTrigger(models.Model):
-    """
-    When a permit or authorisation is issued to a development, there might be several different types of things special
-    to the area the development is occurring on (e.g. threatened/protected species might live there, there might be
-    endangered ecosystems that will be destroyed, etc). These special things are "triggers" for offsets - in other words
-    the conditions (usually that the company has to create an offset) of the permit being issued is based upon these
-    triggers.
-    """
-    permit = models.ForeignKey(Permit, null=True, blank=True)
-
-    ECOSYSTEM = 'E'
-    THREATENED_SP = 'T'
-    TYPE_OF_TRIGGER_CHOICES = (
-        (ECOSYSTEM, 'Ecosystem'),
-        (THREATENED_SP, 'Threatened or protected species populations/individuals')
-    )
-    type_of_trigger = models.CharField(max_length=1, choices=TYPE_OF_TRIGGER_CHOICES)
-    name = models.CharField(max_length=200, null=True, blank=True, help_text="The name of the ecosystem or protected species.")
-
-    # Optional fields sometimes not displayed (only for ecosystems)
-    size = models.IntegerField(null=True, blank=True, help_text="This is the area in hectares relevant to this trigger (e.g. 20 ha of pristine renosterveld will be destroyed).")
-    required_offset_size = models.IntegerField(null=True, blank=True, help_text="The condition of the authorisation, specified in hectares (e.g. conserve 40 ha of pristine renosterveld in compensation)")
+    duration = models.CharField(max_length=2, choices=DURATION_CHOICES, help_text="The length of time the offset should endure for. This does not make sense for certain options.")
 
     MET = 'ME'
     NOT_MET_LAPSED = 'LA'
     NOT_MET_IN_PROGRESS = 'IP'
     NOT_MET_UNKNOWN = 'NU'
+    UNKNOWN = 'UN'
     OFFSET_MET_CHOICES = (
         (MET, 'Yes, this offset has been met'),
         (NOT_MET_LAPSED, 'No, this offset has not been met and the time has lapsed, it is outstanding.'),
         (NOT_MET_IN_PROGRESS, 'No, this offset has not yet been met but the development is still in progress.'),
         (NOT_MET_UNKNOWN, 'No, this offset has not been met for reasons unknown.'),
+        (UNKNOWN, 'We don\'t know if this offset has been met or not.'),
     )
-    offset_met = models.CharField(max_length=1, choices=OFFSET_MET_CHOICES, null=True, blank=True,)
+    offset_met = models.CharField(max_length=1, choices=OFFSET_MET_CHOICES, help_text="The status of the offset requirement (whether it has been met or not).")
+
+
+class BiodiversityLoss(models.Model):
+    """
+    Every time a development occurs there is a loss of biodiversity. Sometimes this biodiversity loss is reflected in the
+    offset, sometimes not. This table will store the each piece of biodiversity lost for a development footprint.
+    """
+    development = models.ForeignKey(Development, help_text="The relevant development.")
+    ECOSYSTEM = 'E'
+    THREATENED_SP = 'T'
+    TYPE_CHOICES = (
+        (ECOSYSTEM, 'Ecosystem'),
+        (THREATENED_SP, 'Threatened or protected species populations/individuals')
+    )
+    type = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    name = models.CharField(max_length=200, null=True, blank=True, help_text="The name of the ecosystem or protected species.")
+
+    # Optional fields sometimes not displayed (only for ecosystems)
+    size = models.IntegerField(null=True, blank=True, help_text="This is the area in hectares relevant to this trigger (e.g. 20 ha of pristine renosterveld will be destroyed).")
+
 
 
 

@@ -25,13 +25,13 @@ class DevelopmentGeoViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.DevelopmentGeoSerializer
 
 
-class OffsetTriggerViewSet(viewsets.ModelViewSet):
+class BiodiversityLossViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
     """
     metadata_class = serializers.GeoMetadata
-    queryset = models.OffsetTrigger.objects.all()
-    serializer_class = serializers.OffsetTriggerSerializer
+    queryset = models.BiodiversityLoss.objects.all()
+    serializer_class = serializers.BiodiversityLossSerializer
 
 
 class PermitViewSet(viewsets.ModelViewSet):

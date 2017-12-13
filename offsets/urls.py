@@ -24,7 +24,7 @@ router.register(r'developments-geo', views.DevelopmentGeoViewSet, base_name='dev
 router.register(r'developments', views.DevelopmentViewSet)
 router.register(r'permit-names', views.PermitNameViewSet)
 router.register(r'permits', views.PermitViewSet)
-router.register(r'offset-triggers', views.OffsetTriggerViewSet)
+router.register(r'biodiversity-loss', views.BiodiversityLossViewSet)
 router.register(r'implementation-times', views.ImplementationTimeViewSet)
 router.register(r'offsets-geo', views.OffsetGeoViewSet, base_name='offsets-geo')
 router.register(r'offsets', views.OffsetViewSet)
