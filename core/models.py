@@ -147,12 +147,14 @@ class Offset(models.Model):
     NOT_MET_LAPSED = 'LA'
     NOT_MET_IN_PROGRESS = 'IP'
     NOT_MET_UNKNOWN = 'NU'
+    NOT_MET_NO_OFFSET = 'NO'
     UNKNOWN = 'UN'
     OFFSET_MET_CHOICES = (
         (MET, 'Yes, this offset has been met'),
         (NOT_MET_LAPSED, 'No, this offset has not been met and the time has lapsed, it is outstanding.'),
         (NOT_MET_IN_PROGRESS, 'No, this offset has not yet been met but the development is still in progress.'),
         (NOT_MET_UNKNOWN, 'No, this offset has not been met for reasons unknown.'),
+        (NOT_MET_NO_OFFSET, 'No, this offset has not been met because there is no offset area available.'),
         (UNKNOWN, 'We don\'t know if this offset has been met or not.'),
     )
     offset_met = models.CharField(max_length=1, choices=OFFSET_MET_CHOICES, help_text="The status of the offset requirement (whether it has been met or not).")
