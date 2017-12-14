@@ -160,12 +160,11 @@ class Offset(models.Model):
     offset_met = models.CharField(max_length=1, choices=OFFSET_MET_CHOICES, help_text="The status of the offset requirement (whether it has been met or not).")
 
 
-class BiodiversityLoss(models.Model):
+class Biodiversity(models.Model):
     """
     Every time a development occurs there is a loss of biodiversity. Sometimes this biodiversity loss is reflected in the
     offset, sometimes not. This table will store the each piece of biodiversity lost for a development footprint.
     """
-    development = models.ForeignKey(Development, help_text="The relevant development.")
     ECOSYSTEM = 'E'
     THREATENED_SP = 'T'
     TYPE_CHOICES = (
@@ -179,5 +178,19 @@ class BiodiversityLoss(models.Model):
     size = models.IntegerField(null=True, blank=True, help_text="This is the area in hectares relevant to this trigger (e.g. 20 ha of pristine renosterveld will be destroyed).")
 
 
+class BiodiversityLoss(Biodiversity):
+    """
+    Every time a development occurs there is a loss of biodiversity. Sometimes this biodiversity loss is reflected in the
+    offset, sometimes not. This table will store the each piece of biodiversity lost for a development footprint.
+    """
+    development = models.ForeignKey(Development, help_text="The relevant development.")
+
+
+class BiodiversityGain(Biodiversity):
+    """
+    Every time a development occurs there is a loss of biodiversity. Sometimes this biodiversity loss is reflected in the
+    offset, sometimes not. This table will store the each piece of biodiversity lost for a development footprint.
+    """
+    offset = models.ForeignKey(Offset, help_text="The relevant offset, should only link to offsets of type 'hectares'.")
 
 
