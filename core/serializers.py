@@ -19,13 +19,19 @@ class PermitNameSerializer(serializers.HyperlinkedModelSerializer):
 class BiodiversityLossSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.BiodiversityLoss
-        fields = ('id', 'url', 'type','name', 'size')
+        fields = ('id', 'url', 'type','name', 'size', 'development')
+
+
+class BiodiversityGainSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.BiodiversityGain
+        fields = ('id', 'url', 'type','name', 'size', 'offset')
 
 
 class PermitSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Permit
-        fields = ('id', 'url', 'permit_name','development', 'case_officer', 'area_hectares', 'date_issued', 'reference_no')
+        fields = ('id', 'url', 'permit_name','development', 'case_officer', 'date_issued', 'reference_no')
 
 
 class GeoMetadata(SimpleMetadata):
@@ -108,7 +114,7 @@ class OffsetGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = models.Offset
         geo_field = 'polygon'
-        fields = ('id', 'url', 'development', 'type', 'get_type_display', 'duration', 'implementation_times', 'info')
+        fields = ('id', 'url', 'permit', 'type', 'get_type_display', 'duration', 'implementation_times', 'info')
 
 
 class OffsetSerializer(serializers.HyperlinkedModelSerializer):
@@ -116,4 +122,4 @@ class OffsetSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.Offset
-        fields = ('id', 'url', 'development', 'type', 'get_type_display', 'duration', 'implementation_times', 'info')
+        fields = ('id', 'url', 'permit', 'type', 'get_type_display', 'duration', 'implementation_times', 'info')

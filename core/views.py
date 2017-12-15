@@ -34,6 +34,15 @@ class BiodiversityLossViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.BiodiversityLossSerializer
 
 
+class BiodiversityGainViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+    """
+    metadata_class = serializers.GeoMetadata
+    queryset = models.BiodiversityGain.objects.all()
+    serializer_class = serializers.BiodiversityGainSerializer
+
+
 class PermitViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
